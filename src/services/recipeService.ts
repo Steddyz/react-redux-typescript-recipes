@@ -7,7 +7,7 @@ export interface Recipe {
   strArea: string;
 }
 
-interface RandomMealResponse {
+interface MealResponse {
   meals: Recipe[];
 }
 
@@ -17,11 +17,15 @@ export const recipeApi = createApi({
     baseUrl: "https://www.themealdb.com/api/json/v1/1/",
   }),
   endpoints: (builder) => ({
-    getRandomRecipe: builder.query<RandomMealResponse, void>({
+    getRandomRecipe: builder.query<MealResponse, void>({
       query: () => `random.php`,
+    }),
+    searchRecipesByIngredient: builder.query<MealResponse, string>({
+      query: (ingredient) => `filter.php?i=${ingredient.replace(/ /g, "_")}`,
     }),
   }),
 });
 
 export default recipeApi.reducer;
-export const { useGetRandomRecipeQuery } = recipeApi;
+export const { useGetRandomRecipeQuery, useSearchRecipesByIngredientQuery } =
+  recipeApi;

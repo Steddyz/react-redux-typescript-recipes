@@ -1,49 +1,27 @@
-import React, { FC, useEffect, useState, ChangeEvent } from "react";
+import { FC, useState, ChangeEvent, FormEvent } from "react";
 
 import cl from "./IngredientsForm.module.css";
-import axios from "axios";
-
-interface Recipe {
-  idMeal: number;
-  strMealThumb: string;
-  strMeal: string;
-  strArea: string;
-}
+import { useSearchRecipesByIngredientQuery } from "../../services/recipeService";
 
 const IngredientsForm: FC = () => {
   const [searchIngred, setSearchIngred] = useState("");
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-
-  useEffect(() => {
-    const fetchRecipe = async () => {
-      if (searchIngred.trim() !== "") {
-        const response = await axios.get(
-          `https://www.themealdb.com/api/json/v1/1/filter.php?i=${searchIngred.replace(
-            / /g,
-            "_"
-          )}`
-        );
-        if (response.data.meals) {
-          setRecipes(response.data.meals);
-        } else {
-          setRecipes([]);
-        }
-      } else {
-        setRecipes([]);
-      }
-    };
-    fetchRecipe();
-  }, [searchIngred]);
+  const { data } = useSearchRecipesByIngredientQuery(searchIngred, {
+    skip: searchIngred.trim() === "",
+  });
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchIngred(e.target.value);
+  };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
   };
 
   return (
     <div className={cl.ingredients_title}>
       <h1 className={cl.title}>Поиск по ингредиентам</h1>
       <hr />
-      <form className={cl.ingredients_form}>
+      <form className={cl.ingredients_form} onSubmit={handleSubmit}>
         <div className={cl.form_group}>
           <label className={cl.form_label}>Желаемые ингредиенты </label>
           <input
@@ -53,9 +31,9 @@ const IngredientsForm: FC = () => {
           />
         </div>
         <div className={cl.recipes_wrapper}>
-          {recipes.length > 0 ? (
+          {data?.meals && data.meals.length > 0 ? (
             <div className={cl.recipes_inner}>
-              {recipes.map((recipe) => (
+              {data?.meals.map((recipe) => (
                 <div className={cl.recipes_item} key={recipe.idMeal}>
                   <img
                     className={cl.image}
