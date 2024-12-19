@@ -1,25 +1,22 @@
-import React, { FC, FormEvent, useState, MouseEvent } from "react";
+import { FC, FormEvent, useState, MouseEvent } from "react";
 
 import cl from "./SearchForm.module.css";
 import Button from "../Button/Button";
+import { useAppDispatch } from "../../hooks/hooks";
+import { setFitler } from "../../features/searchSlice";
 
-interface handleSearch {
-  onSearch: (symbol: string) => void;
-}
-
-const SearchForm: FC<handleSearch> = ({ onSearch }) => {
+const SearchForm: FC = () => {
   const [symbol, setSymbol] = useState<string>("");
+  const dispatch = useAppDispatch();
 
   const handleSearchRecipe = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSearch(symbol);
-    setSymbol("");
+    dispatch(setFitler(symbol));
   };
 
   const handleSearchRecipeClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    onSearch(symbol);
-    setSymbol("");
+    dispatch(setFitler(symbol));
   };
 
   return (

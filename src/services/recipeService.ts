@@ -23,9 +23,15 @@ export const recipeApi = createApi({
     searchRecipesByIngredient: builder.query<MealResponse, string>({
       query: (ingredient) => `filter.php?i=${ingredient.replace(/ /g, "_")}`,
     }),
+    searchRecipes: builder.query<MealResponse, string>({
+      query: (symbol) => `search.php?s=${symbol}`,
+    }),
   }),
 });
 
 export default recipeApi.reducer;
-export const { useGetRandomRecipeQuery, useSearchRecipesByIngredientQuery } =
-  recipeApi;
+export const {
+  useGetRandomRecipeQuery,
+  useSearchRecipesByIngredientQuery,
+  useSearchRecipesQuery,
+} = recipeApi;
