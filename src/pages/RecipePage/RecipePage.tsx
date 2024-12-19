@@ -2,15 +2,7 @@ import React, { FC } from "react";
 import { useLocation } from "react-router-dom";
 
 import cl from "./RecipePage.module.css";
-
-interface Recipe {
-  strMeal: string;
-  strMealThumb: string;
-  strCategory?: string;
-  strArea: string;
-  strInstructions: string;
-  [key: string]: string | undefined;
-}
+import { Recipe } from "@/services/recipeService";
 
 const RecipePage: FC = () => {
   const location = useLocation();

@@ -5,6 +5,18 @@ export interface Recipe {
   strMealThumb: string;
   strMeal: string;
   strArea: string;
+  [key: string]: string | number | undefined;
+}
+
+export interface Category {
+  strCategory: string;
+  idCategory: number;
+  strCategoryThumb: string;
+  strCategoryDescription: string;
+}
+
+interface CategoriesResponse {
+  categories: Category[];
 }
 
 interface MealResponse {
@@ -26,6 +38,9 @@ export const recipeApi = createApi({
     searchRecipes: builder.query<MealResponse, string>({
       query: (symbol) => `search.php?s=${symbol}`,
     }),
+    getCategories: builder.query<CategoriesResponse, void>({
+      query: () => `categories.php`,
+    }),
   }),
 });
 
@@ -34,4 +49,5 @@ export const {
   useGetRandomRecipeQuery,
   useSearchRecipesByIngredientQuery,
   useSearchRecipesQuery,
+  useGetCategoriesQuery,
 } = recipeApi;
