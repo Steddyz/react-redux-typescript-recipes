@@ -17,6 +17,7 @@ const RecipeCard: FC = () => {
   );
 
   const handleRecipeClick = (recipe: Recipe) => {
+    console.log(recipe);
     navigate(`/recipes/${recipe.idMeal}`, { state: recipe });
   };
 

@@ -4,21 +4,26 @@ import SearchForm from "../SearchForm/SearchForm";
 import {
   Recipe,
   useGetMealByCategoryQuery,
+  useSearchRecipesQuery,
 } from "../../services/recipeService";
 
 import cl from "./MealsByCategory.module.css";
+import { useAppSelector } from "../../hooks/hooks";
 
 interface Params {
   [key: string]: string | undefined;
-
   categoryName: string;
 }
 
 const MealsByCategory: FC = () => {
   const { categoryName } = useParams<Params>();
-
-  const { data, isLoading } = useGetMealByCategoryQuery(categoryName || "");
   const navigate = useNavigate();
+
+  const filter = useAppSelector((state) => state.search.filter);
+
+  const { data, isLoading } = useSearchRecipesQuery(
+    filter.trim() === "" ? categoryName || "" : filter
+  );
 
   const handleRecipeClick = (recipe: Recipe) => {
     console.log(recipe);
