@@ -41,6 +41,9 @@ export const recipeApi = createApi({
     getCategories: builder.query<CategoriesResponse, void>({
       query: () => `categories.php`,
     }),
+    getMealByCategory: builder.query<MealResponse, string>({
+      query: (categoryName) => `filter.php?c=${categoryName}`,
+    }),
   }),
 });
 
@@ -50,4 +53,5 @@ export const {
   useSearchRecipesByIngredientQuery,
   useSearchRecipesQuery,
   useGetCategoriesQuery,
+  useGetMealByCategoryQuery,
 } = recipeApi;

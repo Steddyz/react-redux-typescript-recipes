@@ -1,15 +1,12 @@
-import axios from "axios";
-import React, { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import SearchForm from "../SearchForm/SearchForm";
+import {
+  Recipe,
+  useGetMealByCategoryQuery,
+} from "../../services/recipeService";
 
 import cl from "./MealsByCategory.module.css";
-import SearchForm from "../SearchForm/SearchForm";
-
-interface CategoryMeal {
-  idMeal: number;
-  strMealThumb: string;
-  strMeal: string;
-}
 
 interface Params {
   [key: string]: string | undefined;
@@ -19,54 +16,24 @@ interface Params {
 
 const MealsByCategory: FC = () => {
   const { categoryName } = useParams<Params>();
-  const [meals, setMeals] = useState<CategoryMeal[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [selectedMeal, setSelectedMeal] = useState<CategoryMeal | null>(null);
-  const [filter, setFilter] = useState<string>("");
 
+  const { data, isLoading } = useGetMealByCategoryQuery(categoryName || "");
   const navigate = useNavigate();
 
-  const handleSearch = (symbol: string) => {
-    setFilter(symbol.trim());
+  const handleRecipeClick = (recipe: Recipe) => {
+    console.log(recipe);
+    navigate(`/recipes/${recipe.idMeal}`, { state: recipe });
   };
-
-  const handleRecipeClick = async (meal: CategoryMeal) => {
-    try {
-      const response = await axios.get(
-        `https://www.themealdb.com/api/json/v1/1/search.php?s=${meal.strMeal}`
-      );
-      setSelectedMeal(response.data.meals[0]);
-      navigate(`/recipes/${meal.idMeal}`, { state: response.data.meals[0] });
-    } catch (error) {
-      console.error("Error fetching meal details:", error);
-    }
-  };
-
-  useEffect(() => {
-    const mealsByCategory = async () => {
-      const response = await axios.get(
-        `https://www.themealdb.com/api/json/v1/1/filter.php?c=${categoryName}`
-      );
-      setLoading(false);
-      setMeals(response.data.meals || []);
-    };
-    mealsByCategory();
-  }, [categoryName]);
-
-  const filteredMeals = meals.filter((meal) =>
-    meal.strMeal.toLowerCase().includes(filter.toLowerCase())
-  );
+  if (isLoading) return <div className={cl.loading}>Загрузка...</div>;
 
   return (
     <>
       <h2 className={cl.title}>Блюда категории {categoryName}</h2>
-      <SearchForm onSearch={handleSearch} />
+      <SearchForm />
 
-      {loading ? (
-        <div className={cl.loading}>Loading...</div>
-      ) : (
-        <div className={cl.wrapper_meal}>
-          {filteredMeals.map((meal) => (
+      <div className={cl.wrapper_meal}>
+        {data?.meals &&
+          data.meals.map((meal) => (
             <div
               key={meal.idMeal}
               onClick={() => handleRecipeClick(meal)}
@@ -80,8 +47,7 @@ const MealsByCategory: FC = () => {
               <p className={cl.description}>{meal.strMeal}</p>
             </div>
           ))}
-        </div>
-      )}
+      </div>
     </>
   );
 };
